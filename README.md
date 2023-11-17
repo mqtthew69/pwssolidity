@@ -1,6 +1,6 @@
 # pws-solidity
 
-🔗 GitHub Repository: [pws-solidity](https://github.com/mqtthew69/pws-solidity)
+🔗 GitHub Repository: [pwssolidity](https://github.com/mqtthew69/pwssolidity)
 
 ## Introduction
 
@@ -13,7 +13,7 @@ To dive into the supply chain adventure, follow these simple steps:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/mqtthew69/pws-solidity.git
+git clone https://github.com/mqtthew69/pwssolidity.git
 ```
 
 2. Open the `index.html` file in your favorite web browser.
