@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Supply Chain Contract Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.3.4/dist/web3.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Supply Chain Contract</h1>
+
+    <h2>Create Order</h2>
+    <input id="productNr" type="text" placeholder="Product Number">
+    <input id="manufacturer" type="text" placeholder="Manufacturer Address">
+    <input id="price" type="text" placeholder="Price">
+    <button id="createOrder">Create Order</button>
+
+    <h2>Create Shipment</h2>
+    <input id="productNrShip" type="text" placeholder="Product Number">
+    <input id="trackAndTraceCode" type="text" placeholder="Track and Trace Code">
+    <input id="carrier" type="text" placeholder="Carrier Address">
+    <button id="createShipment">Create Shipment</button>
+
+    <h2>Pick Shipment</h2>
+    <input id="trackAndTraceCodePick" type="text" placeholder="Track and Trace Code">
+    <button id="pickShipment">Pick Shipment</button>
+
+    <h2>Deliver Shipment</h2>
+    <input id="trackAndTraceCodeDeliver" type="text" placeholder="Track and Trace Code">
+    <button id="deliverShipment">Deliver Shipment</button>
+
+    <h2>Cancel Shipment</h2>
+    <input id="trackAndTraceCodeCancel" type="text" placeholder="Track and Trace Code">
+    <button id="cancelShipment">Cancel Shipment</button>
+
+    <h2>Claim Refund</h2>
+    <input id="productNrRefund" type="text" placeholder="Product Number">
+    <button id="claimRefund">Claim Refund</button>
+
+    <script>
+        // Check for Ethereum provider
+        if (!window.ethereum) {
+            alert("Please install MetaMask to use this DApp!");
+        }
+
+        // Create a web3 instance
+        const web3 = new Web3(window.ethereum);
+
+        // User's address
+        let userAddress;
+
+        // Start the DApp
+        startApp();
+
+        async function startApp() {
+            userAddress = await getCurrentAccount();
+            connectContract();
+        }
+
+        async function getCurrentAccount() {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            return accounts[0];
+        }
+
+        // The address of the deployed contract
+        const contractAddress = '0x99841629b27F49020201aE50a7d3FAFcbfb84c90';
+
+        // The ABI of the contract
+        const contractABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "trackAndTraceCode",
+				"type": "string"
+			}
+		],
+		"name": "cancelShipment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "productNr",
+				"type": "string"
+			}
+		],
+		"name": "claimRefund",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "productNr",
+				"type": "string"
+			},
+			{
+				"internalType": "address payable",
+				"name": "manufacturer",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			}
+		],
+		"name": "createOrder",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "productNr",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "trackAndTraceCode",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "carrier",
+				"type": "address"
+			}
+		],
+		"name": "createShipment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "trackAndTraceCode",
+				"type": "string"
+			}
+		],
+		"name": "deliverShipment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "trackAndTraceCode",
+				"type": "string"
+			}
+		],
+		"name": "pickShipment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "deposits",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "productNr",
+				"type": "string"
+			}
+		],
+		"name": "getOrder",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "trackAndTraceCode",
+				"type": "string"
+			}
+		],
+		"name": "getShipment",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum SupplyChain.Status",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "orders",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "productNr",
+				"type": "string"
+			},
+			{
+				"internalType": "address payable",
+				"name": "manufacturer",
+				"type": "address"
+			},
+			{
+				"internalType": "address payable",
+				"name": "retailer",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "shipments",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "trackAndTraceCode",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "productNr",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "carrier",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "pickedTimestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "enum SupplyChain.Status",
+				"name": "status",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+
+        // Contract instance
+        let contract;
+
+        function connectContract() {
+            contract = new web3.eth.Contract(contractABI, contractAddress);
+        }
+
+        document.getElementById('createOrder').addEventListener('click', async function() {
+            // Get the form data
+            const productNr = document.getElementById('productNr').value;
+            const manufacturer = document.getElementById('manufacturer').value;
+            const price = web3.utils.toWei(document.getElementById('price').value, "ether");
+
+            // Call the createOrder method of the contract
+            contract.methods.createOrder(productNr, manufacturer, price)
+                .send({ from: userAddress, value: price })  // Ether is specified here
+                .on('transactionHash', hash => {
+                    console.log(`Transaction sent with hash: ${hash}`);
+                })
+                .on('receipt', receipt => {
+                    console.log('Transaction has been confirmed', receipt);
+                })
+                .on('error', error => {
+                    console.error('An error occured', error);
+                });
+        });
+
+        // Add similar event listeners for other methods
+        document.getElementById('createShipment').addEventListener('click', async function() {
+            const productNr = document.getElementById('productNrShip').value;
+            const trackAndTraceCode = document.getElementById('trackAndTraceCode').value;
+            const carrier = document.getElementById('carrier').value;
+
+            contract.methods.createShipment(productNr, trackAndTraceCode, carrier)
+                .send({ from: userAddress })
+                .on('transactionHash', hash => console.log(`Transaction sent with hash: ${hash}`))
+                .on('receipt', receipt => console.log('Transaction has been confirmed', receipt))
+                .on('error', error => console.error('An error occured', error));
+        });
+
+        document.getElementById('pickShipment').addEventListener('click', async function() {
+            const trackAndTraceCode = document.getElementById('trackAndTraceCodePick').value;
+
+            contract.methods.pickShipment(trackAndTraceCode)
+                .send({ from: userAddress })
+                .on('transactionHash', hash => console.log(`Transaction sent with hash: ${hash}`))
+                .on('receipt', receipt => console.log('Transaction has been confirmed', receipt))
+                .on('error', error => console.error('An error occured', error));
+        });
+
+        document.getElementById('deliverShipment').addEventListener('click', async function() {
+            const trackAndTraceCode = document.getElementById('trackAndTraceCodeDeliver').value;
+
+            contract.methods.deliverShipment(trackAndTraceCode)
+                .send({ from: userAddress })
+                .on('transactionHash', hash => console.log(`Transaction sent with hash: ${hash}`))
+                .on('receipt', receipt => console.log('Transaction has been confirmed', receipt))
+                .on('error', error => console.error('An error occured', error));
+        });
+
+        document.getElementById('cancelShipment').addEventListener('click', async function() {
+            const trackAndTraceCode = document.getElementById('trackAndTraceCodeCancel').value;
+
+            contract.methods.cancelShipment(trackAndTraceCode)
+                .send({ from: userAddress })
+                .on('transactionHash', hash => console.log(`Transaction sent with hash: ${hash}`))
+                .on('receipt', receipt => console.log('Transaction has been confirmed', receipt))
+                .on('error', error => console.error('An error occured', error));
+        });
+
+        document.getElementById('claimRefund').addEventListener('click', async function() {
+            const productNr = document.getElementById('productNrRefund').value;
+
+            contract.methods.claimRefund(productNr)
+                .send({ from: userAddress })
+                .on('transactionHash', hash => console.log(`Transaction sent with hash: ${hash}`))
+                .on('receipt', receipt => console.log('Transaction has been confirmed', receipt))
+                .on('error', error => console.error('An error occured', error));
+        });
+    </script>
+</body>
+</html>
